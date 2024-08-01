@@ -11,7 +11,7 @@ Welcome to the **2D Evolution Game**! This game allows local multiplayer where e
 - **Cell Types**: Cells have different properties and interactions, such as:
   - **Mouth Cells**: Eat food to gain energy.
   - **Attack Cells**: Attack and kill opponent organisms.
-	
+
 - **Energy and Evolution**: Gain energy to evolve and add new cells to your organism.
 
 ## Prerequisites
@@ -27,33 +27,44 @@ Follow these steps to build and run the game:
 1. **Install SDL2**:
 
    - On Ubuntu/Debian:
-
      ```bash
      sudo apt-get install libsdl2-dev
      ```
    - On macOS (using Homebrew):
-
      ```bash
      brew install sdl2
      ```
    - On Windows:
      - Download the SDL2 development library from the [SDL2 website](https://www.libsdl.org/download-2.0.php) and follow the instructions for installation.
 
-2. **Clone the Repository**:
+2. **Install SDL2_ttf**:
+
+   - On Ubuntu/Debian:
+     ```bash
+     sudo apt-get install libsdl2-ttf-dev
+     ```
+   - On macOS (using Homebrew):
+     ```bash
+     brew install sdl2_ttf
+     ```
+   - On Windows:
+     - Download the SDL2_ttf development library from the [SDL2_ttf website](https://www.libsdl.org/projects/SDL_ttf/) and follow the installation instructions.
+
+3. **Clone the Repository**:
    ```bash
    git clone https://github.com/Sunit-Shrestha/Evolution-Game.git
    ```
-3. **Navigate to the Project Directory:**
+4. **Navigate to the Project Directory:**
 
 ```bash
 cd Evolution-Game
 ```
-4. **Build the Project:**
+5. **Build the Project:**
 
 ```bash
 make
 ```
-4. **Run the Game:**
+6. **Run the Game:**
 
 ```bash
 ./bin/main
