@@ -19,6 +19,7 @@ Welcome to the **2D Evolution Game**! This game allows local multiplayer where e
 Before you start, ensure you have the following installed on your system:
 
 - **SDL2 Library**: The Simple DirectMedia Layer 2 library is required to run the game.
+- **SDL2_ttf Library**: The SDL2_ttf library is needed for text rendering.
 
 ## Installation
 
