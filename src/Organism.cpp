@@ -7,7 +7,7 @@
 
 int counter = 0;
 
-Organism::Organism(int x, int y) : energy(0), position(Vector(x, y)), alive(true)
+Organism::Organism(int x, int y) : energy(1), position(Vector(x, y)), alive(true)
 {
 	id = counter;
 	counter++;
@@ -151,4 +151,17 @@ void Organism::evolve(std::vector<std::vector<int>> &list_of_position_value_in_s
 
 	body.push_back({position_to_add_type, cell_to_add});
 	world.place_organism(*this);
+	energy--;
+}
+
+void Organism::evolution_caller(std::vector<int> list)
+{
+  int num_chunks = list.size() / 3;
+  for (int i = 0; i < num_chunks; ++i)
+  {
+
+    std::vector<std::vector<int>> matrix(7, std::vector<int>(7, 0));
+    matrix[3 + list[1 + i * 3]][3 + list[0 + i * 3]] = 1;
+    evolve(matrix, CellType(list[2 + i * 3]));
+  }
 }

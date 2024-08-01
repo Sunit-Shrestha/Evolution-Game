@@ -14,9 +14,10 @@
 
 int x_length_of_world = 60;
 int y_length_of_world = 60;
-int SCREEN_WIDTH = 800;
-int SCREEN_HEIGHT = 650;
-int FONT_SIZE = 20;
+int cell_size = 11;
+int SCREEN_WIDTH = x_length_of_world * cell_size;
+int SCREEN_HEIGHT = y_length_of_world * cell_size;
+int FONT_SIZE = 16;
 SDL_Color WHITE = {255, 255, 255};
 SDL_Color GRAY = {128, 128, 128};
 SDL_Color BLACK = {0, 0, 0};
@@ -59,45 +60,23 @@ std::vector<std::vector<std::vector<int>>> map_colors(Map &map)
   return color_array;
 }
 
-Organism Ram = Organism(30, 8);
-Organism Shyam = Organism(30, 52);
+std::vector<Organism *> organisms = {new Organism(1, 1), new Organism(58, 58)};
 
-int find_num_of_legs(Organism &organism)
-{
-  int no_of_legs = 0;
-  for (auto element : organism.body)
-  {
-    if ((element.second)->type == LEG)
-    {
-      ++no_of_legs;
-    }
-  }
-  return no_of_legs;
-}
+// Organism organisms[0]->= Organism(30, 8);
+// Organism organisms[1]->= Organism(30, 52);
 
-void list_to_evolution_caller(std::vector<int> list)
-{
-  int num_chunks = list.size() / 3;
-  for (int i = 0; i < num_chunks; ++i)
-  {
-
-    std::vector<std::vector<int>> matrix(7, std::vector<int>(7, 0));
-    matrix[3 + list[1 + i * 3]][3 + list[0 + i * 3]] = 1;
-    Ram.evolve(matrix, CellType(list[2 + i * 3]));
-  }
-}
-
-void list_to_evolution_caller2(std::vector<int> list)
-{
-  int num_chunks = list.size() / 3;
-  for (int i = 0; i < num_chunks; ++i)
-  {
-
-    std::vector<std::vector<int>> matrix(7, std::vector<int>(7, 0));
-    matrix[3 + list[1 + i * 3]][3 + list[0 + i * 3]] = 1;
-    Shyam.evolve(matrix, CellType(list[2 + i * 3]));
-  }
-}
+// int find_num_of_legs(Organism &organism)
+// {
+//   int no_of_legs = 0;
+//   for (auto element : organism.body)
+//   {
+//     if ((element.second)->type == LEG)
+//     {
+//       ++no_of_legs;
+//     }
+//   }
+//   return no_of_legs;
+// }
 
 void display_opening_screen(SDL_Renderer *renderer, TTF_Font *font, std::string message = "")
 {
@@ -160,7 +139,8 @@ void display_opening_screen(SDL_Renderer *renderer, TTF_Font *font, std::string 
 	int border_width = 2;
 	int box_width = 300;
 	int box_height = evol_surface->h;
-  SDL_Rect borderRect = {(SCREEN_WIDTH - box_width) / 2, 250, box_width, box_height};
+	int box_width_gap = 100;
+  SDL_Rect borderRect = {(SCREEN_WIDTH - box_width - box_width_gap) / 2, 250, box_width + box_width_gap, box_height};
 	SDL_RenderDrawLine(renderer, borderRect.x, borderRect.y, borderRect.x + borderRect.w, borderRect.y);
 	SDL_RenderDrawLine(renderer, borderRect.x, borderRect.y + borderRect.h, borderRect.x + borderRect.w, borderRect.y + borderRect.h);
 	SDL_RenderDrawLine(renderer, borderRect.x, borderRect.y, borderRect.x, borderRect.y + borderRect.h);
@@ -244,6 +224,27 @@ std::vector<int> get_user_input(SDL_Renderer *renderer, TTF_Font *font)
 
 }
 
+void evolve_failed(SDL_Renderer *renderer, TTF_Font *font)
+{
+	display_opening_screen(renderer, font, "Evolution failed. Press any key to exit.");
+	SDL_Event e;
+	while (true)
+	{
+		while (SDL_PollEvent(&e))
+		{
+			if (e.type == SDL_QUIT)
+			{
+				SDL_Quit();
+				exit(0);
+			}
+			else if (e.type == SDL_KEYDOWN)
+			{
+				return;
+			}
+		}
+	}
+}
+
 void draw_array(SDL_Renderer *renderer, std::vector<std::vector<std::vector<int>>> array)
 {
   for (std::size_t i = 0; i < array.size(); ++i)
@@ -251,14 +252,14 @@ void draw_array(SDL_Renderer *renderer, std::vector<std::vector<std::vector<int>
     for (std::size_t j = 0; j < array[i].size(); ++j)
     {
       SDL_SetRenderDrawColor(renderer, array[i][j][0], array[i][j][1], array[i][j][2], 255);
-      SDL_Rect cell_rect = {static_cast<int>(j * 10), static_cast<int>(i * 10), 10, 10};
+      SDL_Rect cell_rect = {static_cast<int>(j * cell_size), static_cast<int>(i * cell_size), cell_size, cell_size};
       SDL_RenderFillRect(renderer, &cell_rect);
     }
   }
   SDL_RenderPresent(renderer);
 }
 
-void start_game(SDL_Renderer *renderer)
+void start_game(SDL_Renderer *renderer, TTF_Font *font)
 {
   std::vector<std::vector<std::vector<int>>> array = map_colors(world);
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -269,46 +270,46 @@ void start_game(SDL_Renderer *renderer)
 
   // Define movement functions similar to the Python version
   auto go_up = [&]()
-  { Ram.move(UP); array = map_colors(world); };
+  { organisms[0]->move(UP); };
   auto go_down = [&]()
-  { Ram.move(DOWN); array = map_colors(world); };
+  { organisms[0]->move(DOWN); };
   auto go_left = [&]()
-  { Ram.move(LEFT); array = map_colors(world); };
+  { organisms[0]->move(LEFT); };
   auto go_right = [&]()
-  { Ram.move(RIGHT); array = map_colors(world); };
+  { organisms[0]->move(RIGHT); };
   auto go_up_right = [&]()
-  { Ram.move(UP_RIGHT); array = map_colors(world); };
+  { organisms[0]->move(UP_RIGHT); };
   auto go_right_down = [&]()
-  { Ram.move(DOWN_RIGHT); array = map_colors(world); };
+  { organisms[0]->move(DOWN_RIGHT); };
   auto go_down_left = [&]()
-  { Ram.move(DOWN_LEFT); array = map_colors(world); };
+  { organisms[0]->move(DOWN_LEFT); };
   auto go_left_up = [&]()
-  { Ram.move(UP_LEFT); array = map_colors(world); };
+  { organisms[0]->move(UP_LEFT); };
   auto go_clockwise = [&]()
-  { Ram.move(NO_MOVE, CLOCKWISE); array = map_colors(world); };
+  { organisms[0]->move(NO_MOVE, CLOCKWISE); };
   auto go_anticlockwise = [&]()
-  { Ram.move(NO_MOVE, COUNTER_CLOCKWISE); array = map_colors(world); };
+  { organisms[0]->move(NO_MOVE, COUNTER_CLOCKWISE); };
 
   auto go_up2 = [&]()
-  { Shyam.move(UP); array = map_colors(world); };
+  { organisms[1]->move(UP); };
   auto go_down2 = [&]()
-  { Shyam.move(DOWN); array = map_colors(world); };
+  { organisms[1]->move(DOWN); };
   auto go_left2 = [&]()
-  { Shyam.move(LEFT); array = map_colors(world); };
+  { organisms[1]->move(LEFT); };
   auto go_right2 = [&]()
-  { Shyam.move(RIGHT); array = map_colors(world); };
+  { organisms[1]->move(RIGHT); };
   auto go_up_right2 = [&]()
-  { Shyam.move(UP_RIGHT); array = map_colors(world); };
+  { organisms[1]->move(UP_RIGHT); };
   auto go_right_down2 = [&]()
-  { Shyam.move(DOWN_RIGHT); array = map_colors(world); };
+  { organisms[1]->move(DOWN_RIGHT); };
   auto go_down_left2 = [&]()
-  { Shyam.move(DOWN_LEFT); array = map_colors(world); };
+  { organisms[1]->move(DOWN_LEFT); };
   auto go_left_up2 = [&]()
-  { Shyam.move(UP_LEFT); array = map_colors(world); };
+  { organisms[1]->move(UP_LEFT); };
   auto go_clockwise2 = [&]()
-  { Shyam.move(NO_MOVE, CLOCKWISE); array = map_colors(world); };
+  { organisms[1]->move(NO_MOVE, CLOCKWISE); };
   auto go_anticlockwise2 = [&]()
-  { Shyam.move(NO_MOVE, COUNTER_CLOCKWISE); array = map_colors(world); };
+  { organisms[1]->move(NO_MOVE, COUNTER_CLOCKWISE);};
 
   auto handle_events = [&]()
   {
@@ -345,6 +346,18 @@ void start_game(SDL_Renderer *renderer)
       go_right();
     if (keys[SDL_SCANCODE_LEFT])
       go_left();
+		if (keys[SDL_SCANCODE_M])
+		{
+			if (organisms[0]->energy > 0)
+			{
+				std::vector<int> numbers = get_user_input(renderer, font);
+				organisms[0]->evolution_caller(numbers);
+			}
+			else
+			{
+				evolve_failed(renderer, font);
+			}
+		}
   };
 
   auto handle_continuous_keys2 = [&](const Uint8 *keys)
@@ -369,6 +382,18 @@ void start_game(SDL_Renderer *renderer)
       go_right2();
     if (keys[SDL_SCANCODE_A])
       go_left2();
+		if (keys[SDL_SCANCODE_E])
+		{
+			if (organisms[1]->energy > 0)
+			{
+				std::vector<int> numbers = get_user_input(renderer, font);
+				organisms[1]->evolution_caller(numbers);
+			}
+			else
+			{
+				evolve_failed(renderer, font);
+			}
+		}
   };
 
   while (!quit)
@@ -377,6 +402,7 @@ void start_game(SDL_Renderer *renderer)
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
     handle_continuous_keys(keys);
     handle_continuous_keys2(keys);
+		std::vector<std::vector<std::vector<int>>> array = map_colors(world);
     draw_array(renderer, array);
     SDL_Delay(100);
   }
@@ -384,8 +410,10 @@ void start_game(SDL_Renderer *renderer)
 
 int main()
 {
-	world.place_organism(Ram);
-	world.place_organism(Shyam);
+	for (auto organism : organisms) 
+	{
+		world.place_organism(*organism);
+	}
 
   std::vector<int> no_of_success;
   std::srand(std::time(0));
@@ -431,18 +459,32 @@ int main()
     return -1;
   }
 
-  // display_opening_screen(renderer, font);
-  std::vector<int> numbers = get_user_input(renderer, font);
-  list_to_evolution_caller(numbers);
-  // display_opening_screen(renderer, font);
-  std::vector<int> numbers2 = get_user_input(renderer, font);
-  list_to_evolution_caller2(numbers2);
-  start_game(renderer);
+	for (auto organism : organisms)
+	{			
+		if (organism->energy > 0)
+		{
+			std::vector<int> numbers = get_user_input(renderer, font);
+			organism->evolution_caller(numbers);
+		}
+		else
+		{
+			evolve_failed(renderer, font);
+		}
+	}
+
+  start_game(renderer, font);
 
   TTF_CloseFont(font);
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   TTF_Quit();
   SDL_Quit();
+
+	for (auto organism : organisms)
+	{
+		delete organism;
+	}
+	organisms.clear();
+
 	return 0;
 }
