@@ -14,6 +14,7 @@ public:
 	Vector position;
 	std::vector<std::pair<Vector, Cell *>> body;
 	int energy;
+	int num_of_legs;
 
 	Organism(int x, int y);
 	~Organism();

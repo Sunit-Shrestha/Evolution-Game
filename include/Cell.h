@@ -53,6 +53,12 @@ public:
 	void place(Cell *&cell) override;
 };
 
+class LegCell : public Cell
+{
+public:
+	LegCell(Organism *ptr);
+};
+
 Cell *createCell(CellType type, Organism *ptr);
 
 #endif // CELL_H

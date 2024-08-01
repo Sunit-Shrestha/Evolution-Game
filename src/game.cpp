@@ -62,22 +62,6 @@ std::vector<std::vector<std::vector<int>>> map_colors(Map &map)
 
 std::vector<Organism *> organisms = {new Organism(1, 1), new Organism(58, 58)};
 
-// Organism organisms[0]->= Organism(30, 8);
-// Organism organisms[1]->= Organism(30, 52);
-
-// int find_num_of_legs(Organism &organism)
-// {
-//   int no_of_legs = 0;
-//   for (auto element : organism.body)
-//   {
-//     if ((element.second)->type == LEG)
-//     {
-//       ++no_of_legs;
-//     }
-//   }
-//   return no_of_legs;
-// }
-
 void display_opening_screen(SDL_Renderer *renderer, TTF_Font *font, std::string message = "")
 {
   SDL_SetRenderDrawColor(renderer, WHITE.r, WHITE.g, WHITE.b, 255);

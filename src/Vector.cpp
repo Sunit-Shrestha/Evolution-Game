@@ -75,9 +75,9 @@ Vector Vector::rotateCounterClockwise() const
 	return Vector(-y, x);
 }
 
-Vector Vector::operator()(Direction d) const
+Vector Vector::operator()(Direction d, int times) const
 {
-	return *this + Vector(d);
+	return *this + Vector(d) * times;
 }
 
 Vector Vector::operator()(Rotation r) const

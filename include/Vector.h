@@ -37,7 +37,7 @@ public:
 	Vector operator/(int scalar) const;
 	Vector rotateClockwise() const;
 	Vector rotateCounterClockwise() const;
-	Vector operator()(Direction d) const;
+	Vector operator()(Direction d, int times = 1) const;
 	Vector operator()(Rotation r) const;
 };
 

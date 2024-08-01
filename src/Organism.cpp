@@ -7,7 +7,7 @@
 
 int counter = 0;
 
-Organism::Organism(int x, int y) : energy(1), position(Vector(x, y)), alive(true)
+Organism::Organism(int x, int y) : energy(1), position(Vector(x, y)), alive(true), num_of_legs(0)
 {
 	id = counter;
 	counter++;
@@ -16,7 +16,7 @@ Organism::Organism(int x, int y) : energy(1), position(Vector(x, y)), alive(true
 			{{0, -1}, new MouthCell(this)},
 			{{0, 1}, new MouthCell(this)},
 			{{-1, 0}, new AttackCell(this)},
-			{{1, 0}, new AttackCell(this)}};
+			{{1, 0}, new LegCell(this)}};
 }
 
 Organism::~Organism()
@@ -43,6 +43,10 @@ void Organism::kill(Cell *cell)
 	{
 		if (body[i].second == cell)
 		{
+			if (cell->type == LEG)
+			{
+				num_of_legs--;
+			}
 			Vector pos = body[i].first + position;
 			body.erase(body.begin() + i);
 			delete cell;
@@ -61,7 +65,7 @@ void Organism::move(Direction move, Rotation turn)
 	Vector old_position = position;
 	std::vector<std::pair<Vector, Cell *>> old_body = body;
 
-	position = position(move);
+	position = position(move, num_of_legs);
 	for (auto &pair : body)
 	{
 		pair.first = pair.first(turn);

@@ -34,7 +34,7 @@ bool AttackCell::is_placeable(Cell *&cell)
 {
 	if (cell == nullptr)
 		return true;
-	if (cell->type == MOUTH || cell->type == BRAIN)
+	if (cell->type == MOUTH || cell->type == BRAIN || cell->type == LEG)
 	{
 		cell->belongs_to->kill(cell);
 	}
@@ -82,7 +82,15 @@ Cell *createCell(CellType type, Organism *ptr)
 		return new MouthCell(ptr);
 	case ATTACK:
 		return new AttackCell(ptr);
+	case LEG:
+		return new LegCell(ptr);
 	default:
 		return nullptr;
 	}
+}
+
+LegCell::LegCell(Organism *ptr) : Cell(ptr)
+{
+	type = LEG;
+	ptr->num_of_legs++;
 }
