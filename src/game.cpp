@@ -18,6 +18,7 @@ int SCREEN_WIDTH = 800;
 int SCREEN_HEIGHT = 650;
 int FONT_SIZE = 20;
 SDL_Color WHITE = {255, 255, 255};
+SDL_Color GRAY = {128, 128, 128};
 SDL_Color BLACK = {0, 0, 0};
 
 std::vector<std::vector<int>> color_names = {
@@ -98,7 +99,7 @@ void list_to_evolution_caller2(std::vector<int> list)
   }
 }
 
-void display_opening_screen(SDL_Renderer *renderer, TTF_Font *font)
+void display_opening_screen(SDL_Renderer *renderer, TTF_Font *font, std::string message = "")
 {
   SDL_SetRenderDrawColor(renderer, WHITE.r, WHITE.g, WHITE.b, 255);
   SDL_RenderClear(renderer);
@@ -133,6 +134,39 @@ void display_opening_screen(SDL_Renderer *renderer, TTF_Font *font)
   SDL_Rect instructions_rect = {(SCREEN_WIDTH - instructions_surface->w) / 2, 200, instructions_surface->w, instructions_surface->h};
   SDL_RenderCopy(renderer, instructions_texture, NULL, &instructions_rect);
 
+	SDL_Color text_color = BLACK;
+	if (message == "")
+	{
+		message = "Enter the numbers";
+		text_color = GRAY;
+	}
+  SDL_Surface *evol_surface = TTF_RenderText_Solid(font, message.c_str(), text_color);
+  if (!evol_surface)
+  {
+    std::cerr << "Failed to create evolve surface: " << TTF_GetError() << std::endl;
+		SDL_FreeSurface(title_surface);
+		SDL_DestroyTexture(title_texture);
+		SDL_FreeSurface(title_surface2);
+		SDL_DestroyTexture(title_texture2);
+		SDL_FreeSurface(instructions_surface);
+		SDL_DestroyTexture(instructions_texture);
+    return;
+  }
+  SDL_Texture *evol_texture = SDL_CreateTextureFromSurface(renderer, evol_surface);
+  SDL_Rect evol_rect = {(SCREEN_WIDTH - evol_surface->w) / 2, 250, evol_surface->w, evol_surface->h};
+	SDL_RenderCopy(renderer, evol_texture, NULL, &evol_rect);
+
+	SDL_SetRenderDrawColor(renderer, BLACK.r, BLACK.g, BLACK.b, 255);
+	int border_width = 2;
+	int box_width = 300;
+	int box_height = evol_surface->h;
+  SDL_Rect borderRect = {(SCREEN_WIDTH - box_width) / 2, 250, box_width, box_height};
+	SDL_RenderDrawLine(renderer, borderRect.x, borderRect.y, borderRect.x + borderRect.w, borderRect.y);
+	SDL_RenderDrawLine(renderer, borderRect.x, borderRect.y + borderRect.h, borderRect.x + borderRect.w, borderRect.y + borderRect.h);
+	SDL_RenderDrawLine(renderer, borderRect.x, borderRect.y, borderRect.x, borderRect.y + borderRect.h);
+	SDL_RenderDrawLine(renderer, borderRect.x + borderRect.w, borderRect.y, borderRect.x + borderRect.w, borderRect.y + borderRect.h);
+
+
   SDL_RenderPresent(renderer);
 
   SDL_FreeSurface(title_surface);
@@ -141,17 +175,21 @@ void display_opening_screen(SDL_Renderer *renderer, TTF_Font *font)
   SDL_DestroyTexture(title_texture2);
   SDL_FreeSurface(instructions_surface);
   SDL_DestroyTexture(instructions_texture);
+	SDL_FreeSurface(evol_surface);
+  SDL_DestroyTexture(evol_texture);
 }
 
 std::vector<int> get_user_input(SDL_Renderer *renderer, TTF_Font *font)
 {
+	
   SDL_Rect input_box = {(SCREEN_WIDTH - 300) / 2, 250, 300, 40};
   std::string input_text = "";
+	display_opening_screen(renderer, font, input_text);
+	SDL_Event e;
   bool input_active = true;
 
   while (input_active)
   {
-    SDL_Event e;
     while (SDL_PollEvent(&e))
     {
       if (e.type == SDL_QUIT)
@@ -159,30 +197,16 @@ std::vector<int> get_user_input(SDL_Renderer *renderer, TTF_Font *font)
         SDL_Quit();
         exit(0);
       }
-      else if (e.type == SDL_KEYDOWN)
+			else if (e.type == SDL_KEYDOWN)
       {
         if (e.key.keysym.sym == SDLK_RETURN)
         {
-          std::vector<int> numbers;
-          try
-          {
-            std::size_t pos = 0;
-            while ((pos = input_text.find(" ")) != std::string::npos)
-            {
-              numbers.push_back(std::stoi(input_text.substr(0, pos)));
-              input_text.erase(0, pos + 1);
-            }
-            numbers.push_back(std::stoi(input_text));
-            return numbers;
-          }
-          catch (...)
-          {
-            std::cout << "Invalid input. Please enter numbers separated by spaces." << std::endl;
-          }
+					input_active = false;
         }
-        else if (e.key.keysym.sym == SDLK_BACKSPACE && input_text.length() > 0)
+        else if (e.key.keysym.sym == SDLK_BACKSPACE)
         {
-          input_text.pop_back();
+					if (input_text.length() > 0)
+          	input_text.pop_back();
         }
         else if (e.key.keysym.sym == SDLK_SPACE)
         {
@@ -197,26 +221,27 @@ std::vector<int> get_user_input(SDL_Renderer *renderer, TTF_Font *font)
 
     SDL_SetRenderDrawColor(renderer, WHITE.r, WHITE.g, WHITE.b, 255);
     SDL_RenderClear(renderer);
-    display_opening_screen(renderer, font);
-
-    SDL_SetRenderDrawColor(renderer, BLACK.r, BLACK.g, BLACK.b, 255);
-    SDL_RenderDrawRect(renderer, &input_box);
-    SDL_Surface *text_surface = TTF_RenderText_Solid(font, input_text.c_str(), BLACK);
-    if (!text_surface)
-    {
-      // std::cerr << "Failed to create text surface: " << TTF_GetError() << std::endl;
-      continue;
-    }
-    SDL_Texture *text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
-    SDL_Rect text_rect = {input_box.x + 5, input_box.y + 10, text_surface->w, text_surface->h};
-    SDL_RenderCopy(renderer, text_texture, NULL, &text_rect);
-    SDL_RenderPresent(renderer);
-
-    SDL_FreeSurface(text_surface);
-    SDL_DestroyTexture(text_texture);
+    display_opening_screen(renderer, font, input_text);
   }
 
-  return std::vector<int>();
+	std::vector<int> numbers;
+	std::string number;
+	bool negative = false;
+	for (char c : input_text)
+	{
+		if (c == '-')
+		{
+			negative = true;
+		}
+		else if (c != ' ')
+		{
+			number = c;
+			numbers.push_back(negative ? -std::stoi(number): std::stoi(number));
+			negative = false;
+		}
+	}
+	return numbers;
+
 }
 
 void draw_array(SDL_Renderer *renderer, std::vector<std::vector<std::vector<int>>> array)
@@ -233,18 +258,12 @@ void draw_array(SDL_Renderer *renderer, std::vector<std::vector<std::vector<int>
   SDL_RenderPresent(renderer);
 }
 
-void start_game(const std::vector<int> &numbers, SDL_Renderer *renderer)
+void start_game(SDL_Renderer *renderer)
 {
   std::vector<std::vector<std::vector<int>>> array = map_colors(world);
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
   SDL_RenderPresent(renderer);
-  std::cout << "Starting game with numbers:";
-  for (int number : numbers)
-  {
-    std::cout << " " << number;
-  }
-  std::cout << std::endl;
   SDL_Event e;
   bool quit = false;
 
@@ -365,14 +384,18 @@ void start_game(const std::vector<int> &numbers, SDL_Renderer *renderer)
 
 int main()
 {
+	world.place_organism(Ram);
+	world.place_organism(Shyam);
 
   std::vector<int> no_of_success;
   std::srand(std::time(0));
+	
   for (int i = 0; i < 5; ++i)
   {
     int x = std::rand() % x_length_of_world;
     int y = 20 + (std::rand() % 21);
-    world[Vector(x, y)] = new FoodCell();
+		if (world[Vector(x, y)] == nullptr)
+    	world[Vector(x, y)] = new FoodCell();
   }
 
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -408,15 +431,14 @@ int main()
     return -1;
   }
 
-  display_opening_screen(renderer, font);
+  // display_opening_screen(renderer, font);
   std::vector<int> numbers = get_user_input(renderer, font);
   list_to_evolution_caller(numbers);
-  display_opening_screen(renderer, font);
+  // display_opening_screen(renderer, font);
   std::vector<int> numbers2 = get_user_input(renderer, font);
   list_to_evolution_caller2(numbers2);
-	world.place_organism(Ram);
-	world.place_organism(Shyam);
-  start_game(numbers, renderer);
+  start_game(renderer);
+
   TTF_CloseFont(font);
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);

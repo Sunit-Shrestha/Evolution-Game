@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Vector.h"
 #include "Cell.h"
 #include "Organism.h"
