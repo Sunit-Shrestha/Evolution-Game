@@ -5,10 +5,13 @@ Welcome to the **2D Evolution Game**! This game allows local multiplayer where e
 ## Features
 
 - **Local Multiplayer**: Play with friends in a local multiplayer setting.
+
 - **Organism Control**: Each player controls an organism with a variety of cells.
+
 - **Cell Types**: Cells have different properties and interactions, such as:
   - **Mouth Cells**: Eat food to gain energy.
   - **Attack Cells**: Attack and kill opponent organisms.
+	
 - **Energy and Evolution**: Gain energy to evolve and add new cells to your organism.
 
 ## Prerequisites
@@ -29,7 +32,7 @@ Follow these steps to build and run the game:
      sudo apt-get install libsdl2-dev
      ```
    - On macOS (using Homebrew):
-	 
+
      ```bash
      brew install sdl2
      ```
