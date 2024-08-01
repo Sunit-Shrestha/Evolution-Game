@@ -17,7 +17,7 @@ OBJECTS = $(SOURCES:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 TARGET = $(BINDIR)/main
 
 # Default target
-all: $(TARGET) run
+all: $(TARGET)
 
 # Rule to build the target
 $(TARGET): $(OBJECTS)
@@ -28,9 +28,6 @@ $(TARGET): $(OBJECTS)
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) $(LIBS) -c $< -o $@
-
-run:
-	./bin/main
 
 # Clean up build artifacts
 clean:
