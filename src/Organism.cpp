@@ -65,7 +65,7 @@ void Organism::move(Direction move, Rotation turn)
 	Vector old_position = position;
 	std::vector<std::pair<Vector, Cell *>> old_body = body;
 
-	position = position(move, num_of_legs);
+	position = position(move);
 	for (auto &pair : body)
 	{
 		pair.first = pair.first(turn);
@@ -151,6 +151,13 @@ void Organism::evolve(std::vector<std::vector<int>> &list_of_position_value_in_s
 	}
 
 	Vector position_to_add_type = max_position_finder_2d_matrix(list_of_position_value_in_single_organism_world) + Vector(-3, -3);
+	for (int i = 0; i < body.size(); i++)
+	{
+		if (body[i].first == position_to_add_type)
+		{
+			return;
+		}
+	}
 	Cell *cell_to_add = createCell(type, this);
 
 	body.push_back({position_to_add_type, cell_to_add});

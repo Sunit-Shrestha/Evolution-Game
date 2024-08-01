@@ -65,6 +65,11 @@ Vector Vector::operator/(int scalar) const
 	return Vector(x / scalar, y / scalar);
 }
 
+bool Vector::operator==(const Vector &other) const
+{
+	return x == other.x && y == other.y;
+}
+
 Vector Vector::rotateClockwise() const
 {
 	return Vector(y, -x);

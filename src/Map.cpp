@@ -5,6 +5,14 @@
 
 int world_rows = 60;
 int world_columns = 60;
+std::vector<std::vector<int>> color_names = {
+	{255, 255, 255},
+	{255, 255, 0},
+	{0, 255, 0},
+	{0, 0, 255},
+	{165, 42, 42},
+	{0, 0, 0}
+}; 
 
 Map::Map(int rows, int columns)
 {
@@ -85,6 +93,35 @@ Map::~Map()
 			}
 		}
 	}
+}
+
+std::vector<std::vector<std::vector<int>>> Map::map_colors()
+{
+  std::vector<std::vector<std::vector<int>>> color_array;
+
+  for (auto row : grid)
+  {
+    std::vector<std::vector<int>> color_row;
+    for (Cell *cell : row)
+    {
+			if (cell == nullptr)
+			{
+				color_row.push_back(color_names[0]);
+				continue;
+			}
+      if (cell->type < color_names.size())
+      {
+        color_row.push_back(color_names[cell->type + 1]);
+      }
+      else
+      {
+        color_row.push_back({255, 0, 0});
+      }
+    }
+    color_array.push_back(color_row);
+  }
+
+  return color_array;
 }
 
 Map world(world_rows, world_columns);
