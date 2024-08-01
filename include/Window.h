@@ -10,6 +10,7 @@ void display_opening_screen(SDL_Renderer *renderer, TTF_Font *font, std::string 
 std::vector<int> get_user_input(SDL_Renderer *renderer, TTF_Font *font);
 void evolve_failed(SDL_Renderer *renderer, TTF_Font *font);
 void draw_array(SDL_Renderer *renderer, std::vector<std::vector<std::vector<int>>> array);
+void end_window(SDL_Renderer *renderer, TTF_Font *font, int id);
 
 extern int cell_size;
 extern int SCREEN_WIDTH;

@@ -190,3 +190,26 @@ void draw_array(SDL_Renderer *renderer, std::vector<std::vector<std::vector<int>
   }
   SDL_RenderPresent(renderer);
 }
+
+void end_window(SDL_Renderer *renderer, TTF_Font *font, int id) {
+	SDL_Delay(10000);
+	std::string text  = "Game over. Player " + std::to_string(id) + "won. Press any key to exit.";
+	display_opening_screen(renderer, font, text);
+	SDL_Event e;
+	while (true)
+	{
+		while (SDL_PollEvent(&e))
+		{
+			if (e.type == SDL_QUIT)
+			{
+				SDL_Quit();
+				exit(0);
+			}
+			else if (e.type == SDL_KEYDOWN)
+			{
+				SDL_Quit();
+				exit(0);
+			}
+		}
+	}
+}

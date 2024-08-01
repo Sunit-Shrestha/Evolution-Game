@@ -17,6 +17,7 @@ Organism::Organism(int x, int y) : energy(1), position(Vector(x, y)), alive(true
 			{{0, 1}, new MouthCell(this)},
 			{{-1, 0}, new AttackCell(this)},
 			{{1, 0}, new LegCell(this)}};
+	brain_cell = body[0].second;
 }
 
 Organism::~Organism()
@@ -46,6 +47,8 @@ void Organism::kill(Cell *cell)
 			if (cell->type == LEG)
 			{
 				num_of_legs--;
+				if (num_of_legs == 0)
+					kill(brain_cell);
 			}
 			Vector pos = body[i].first + position;
 			body.erase(body.begin() + i);

@@ -15,6 +15,7 @@ public:
 	std::vector<std::pair<Vector, Cell *>> body;
 	int energy;
 	int num_of_legs;
+	Cell *brain_cell;
 
 	Organism(int x, int y);
 	~Organism();

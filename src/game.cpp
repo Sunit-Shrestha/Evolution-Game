@@ -175,6 +175,12 @@ void start_game(SDL_Renderer *renderer, TTF_Font *font)
 	    handle_continuous_keys2(keys);
 			count2 = 0;
 		}
+		for (int i = 0; i < organisms.size(); i++) {
+			if (!organisms[i]->alive) {
+				end_window(renderer, font, i == 0 ? 2 : 1);
+				return;
+			}
+		}
 		org1_time = 120 / organisms[0]->num_of_legs;
 		org2_time = 120 / organisms[1]->num_of_legs;
 		interval = std::gcd(org1_time, org2_time);
